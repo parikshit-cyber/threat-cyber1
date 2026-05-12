@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOSSIER.OS // ACTIVE DOSSIERS</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="nav-logo">📁</div>
+      <div class="nav-brand-text">
+        <h1>DOSSIER.OS</h1>
+        <span>EVIDENCE VAULT // ONLINE</span>
+      </div>
+    </div>
+    <div class="nav-stats">
+      <span class="nav-stat">DOSSIERS<span class="count" id="statDossiers">0</span></span>
+      <span class="nav-stat">EVIDENCE<span class="count" id="statEvidence">0</span></span>
+      <span class="nav-stat">FILES<span class="count" id="statFiles">0</span></span>
+    </div>
+    <button class="logout-btn" onclick="logout()">⎋ LOGOUT</button>
+  </nav>
+
+  <div class="dashboard-container">
+    <div class="section-prefix">> VAULT.LIST_ALL()</div>
+    <h2 class="section-title">ACTIVE <span class="accent">DOSSIERS</span></h2>
+    <p class="section-desc">Persons of interest with associated evidence, notes, files and intel reports.</p>
+
+    <div class="top-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="search by name, alias, company, contact ..." oninput="debounceSearch()">
+      </div>
+      <button class="new-dossier-btn" onclick="openNewDossierModal()">+ NEW DOSSIER</button>
+    </div>
+
+    <div class="dossier-grid" id="dossierGrid"></div>
+  </div>
+
+  <!-- New/Edit Dossier Modal -->
+  <div class="modal-overlay" id="dossierModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">+ NEW DOSSIER</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editDossierId">
+        <div class="form-group">
+          <label class="form-label">FULL NAME *</label>
+          <input class="form-input" id="fFullName" placeholder="John Doe" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">ALIAS / CODENAME</label><input class="form-input" id="fAlias" placeholder="Ghost"></div>
+          <div class="form-group"><label class="form-label">COMPANY / ORGANIZATION</label><input class="form-input" id="fCompany" placeholder="Acme Corp"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">ROLE / TITLE</label><input class="form-input" id="fRole" placeholder="CFO"></div>
+          <div class="form-group"><label class="form-label">EMAIL</label><input class="form-input" id="fEmail" placeholder="j.doe@acme.io"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">PHONE</label><input class="form-input" id="fPhone" placeholder="+1 555 0100"></div>
+          <div class="form-group"><label class="form-label">DATE OF BIRTH</label><input type="date" class="form-input" id="fDob"></div>
+        </div>
+        <div class="form-group"><label class="form-label">ID NUMBER</label><input class="form-input" id="fIdNumber" placeholder="Passport / SSN / etc."></div>
+        <div class="form-group"><label class="form-label">ADDRESS</label><input class="form-input" id="fAddress" placeholder="Street, City, Country"></div>
+        <div class="form-group"><label class="form-label">SOCIAL MEDIA</label><input class="form-input" id="fSocial" placeholder="@handle / LinkedIn url"></div>
+        <div class="form-group"><label class="form-label">FAMILY INFO</label><textarea class="form-textarea" id="fFamily" placeholder="Spouse, children, relatives ..."></textarea></div>
+        <div class="form-group"><label class="form-label">GENERAL NOTES</label><textarea class="form-textarea" id="fNotes" placeholder="Background, suspicions, observations ..."></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">CANCEL</button>
+        <button class="btn-save" onclick="saveDossier()">SAVE DOSSIER</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

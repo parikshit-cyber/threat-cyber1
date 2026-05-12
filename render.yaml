@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: dossier-os
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ACCESS_CODE
+        value: "1111"

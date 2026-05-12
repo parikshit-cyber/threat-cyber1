@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dossier.OS - Classified Evidence Vault System">
+  <title>DOSSIER.OS // SECURE TERMINAL</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-title"><span class="prompt">❯_</span>DOSSIER.OS // SECURE TERMINAL</div>
+        <div class="traffic-lights"><span class="red"></span><span class="yellow"></span><span class="green-light"></span></div>
+      </div>
+      <div class="terminal-body">
+        <div class="boot-sequence">
+          <div class="boot-line">$ booting dossier.os v3.7.1 ...</div>
+          <div class="boot-line">$ initializing secure channel ...</div>
+          <div class="boot-line">$ loading evidence vault drivers ...</div>
+          <div class="boot-line">$ verifying integrity hashes ... OK</div>
+          <div class="boot-line">$ awaiting clearance code ...</div>
+          <div class="boot-line">$ enter access code to proceed_</div>
+        </div>
+        <h1 class="vault-title">EVIDENCE VAULT</h1>
+        <p class="vault-subtitle">CLASSIFIED // NEED-TO-KNOW BASIS</p>
+        <div class="access-label">ACCESS CODE</div>
+        <div class="code-input-group" id="codeGroup">
+          <input type="password" class="code-digit" maxlength="1" data-index="0" autofocus>
+          <input type="password" class="code-digit" maxlength="1" data-index="1">
+          <input type="password" class="code-digit" maxlength="1" data-index="2">
+          <input type="password" class="code-digit" maxlength="1" data-index="3">
+        </div>
+        <div class="login-error" id="loginError"></div>
+        <button class="auth-btn" id="authBtn" onclick="authenticate()">AUTHENTICATE</button>
+        <hr class="divider">
+        <p class="hint-text">HINT // SHARED CLEARANCE CODE: <span class="code-hint">1 1 1 1</span></p>
+      </div>
+      <div class="terminal-footer">// SESSION ENCRYPTED // LOGS RETAINED 90D // UNAUTHORIZED ACCESS PROSECUTED</div>
+    </div>
+  </div>
+  <script src="/js/login.js"></script>
+</body>
+</html>

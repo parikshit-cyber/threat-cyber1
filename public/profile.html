@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOSSIER.OS // PROFILE</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="profile-topbar">
+    <button class="back-btn" onclick="window.location.href='/dashboard'">← BACK</button>
+    <div class="profile-actions">
+      <button class="edit-btn" onclick="openEditModal()">✏ EDIT</button>
+      <button class="purge-btn" onclick="purgeDossier()">🗑 PURGE</button>
+    </div>
+  </div>
+
+  <div class="profile-container">
+    <div class="profile-sidebar" id="profileSidebar"></div>
+    <div class="evidence-section">
+      <div class="evidence-header">
+        <div class="evidence-prefix">> EVIDENCE.LIST()</div>
+        <h2 class="evidence-title">EVIDENCE (<span class="accent" id="evidenceCount">0</span>)</h2>
+      </div>
+      <div class="evidence-actions">
+        <div class="evidence-add-btn note-btn" onclick="openEvidenceModal('note')"><span class="icon">📝</span><span class="label">+ NOTE</span></div>
+        <div class="evidence-add-btn image-btn" onclick="openEvidenceModal('image')"><span class="icon">🖼</span><span class="label">+ IMAGE</span></div>
+        <div class="evidence-add-btn file-btn" onclick="openEvidenceModal('file')"><span class="icon">📄</span><span class="label">+ FILE</span></div>
+        <div class="evidence-add-btn report-btn" onclick="openEvidenceModal('report')"><span class="icon">📋</span><span class="label">+ REPORT</span></div>
+      </div>
+      <div class="evidence-list" id="evidenceList"><div class="evidence-empty">// NO EVIDENCE ON RECORD</div></div>
+    </div>
+  </div>
+
+  <!-- Edit Dossier Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-header"><h2>✏ EDIT DOSSIER</h2><button class="modal-close" onclick="closeEditModal()">&times;</button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">FULL NAME *</label><input class="form-input" id="eName"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">ALIAS / CODENAME</label><input class="form-input" id="eAlias"></div>
+          <div class="form-group"><label class="form-label">COMPANY / ORGANIZATION</label><input class="form-input" id="eCompany"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">ROLE / TITLE</label><input class="form-input" id="eRole"></div>
+          <div class="form-group"><label class="form-label">EMAIL</label><input class="form-input" id="eEmail"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">PHONE</label><input class="form-input" id="ePhone"></div>
+          <div class="form-group"><label class="form-label">DATE OF BIRTH</label><input type="date" class="form-input" id="eDob"></div>
+        </div>
+        <div class="form-group"><label class="form-label">ID NUMBER</label><input class="form-input" id="eIdNumber"></div>
+        <div class="form-group"><label class="form-label">ADDRESS</label><input class="form-input" id="eAddress"></div>
+        <div class="form-group"><label class="form-label">SOCIAL MEDIA</label><input class="form-input" id="eSocial"></div>
+        <div class="form-group"><label class="form-label">FAMILY INFO</label><textarea class="form-textarea" id="eFamily"></textarea></div>
+        <div class="form-group"><label class="form-label">GENERAL NOTES</label><textarea class="form-textarea" id="eNotes"></textarea></div>
+      </div>
+      <div class="modal-footer"><button class="btn-cancel" onclick="closeEditModal()">CANCEL</button><button class="btn-save" onclick="saveEdit()">UPDATE</button></div>
+    </div>
+  </div>
+
+  <!-- Evidence Modal -->
+  <div class="modal-overlay" id="evidenceModal">
+    <div class="modal">
+      <div class="modal-header"><h2 id="evModalTitle">+ ADD EVIDENCE</h2><button class="modal-close" onclick="closeEvidenceModal()">&times;</button></div>
+      <div class="modal-body evidence-modal-body">
+        <input type="hidden" id="evType">
+        <div class="form-group"><label class="form-label">TITLE</label><input class="form-input" id="evTitle" placeholder="Evidence title ..."></div>
+        <div id="evContentArea"></div>
+      </div>
+      <div class="modal-footer"><button class="btn-cancel" onclick="closeEvidenceModal()">CANCEL</button><button class="btn-save" onclick="saveEvidence()">ADD EVIDENCE</button></div>
+    </div>
+  </div>
+
+  <!-- View Note/Report Modal -->
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal">
+      <div class="modal-header"><h2 id="viewModalTitle">VIEW</h2><button class="modal-close" onclick="document.getElementById('viewModal').classList.remove('active')">&times;</button></div>
+      <div class="modal-body"><div id="viewContent" class="note-content"></div></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/js/profile.js"></script>
+</body>
+</html>
