@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: dossier-os
+    name: threat-intelligence
     runtime: node
     plan: free
     buildCommand: npm install

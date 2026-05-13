@@ -58,7 +58,7 @@ app.get('/health', (req, res) => {
 });
 
 // Connect to MongoDB & start server
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dossier-os';
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/threat_intelligence';
 
 mongoose.connect(MONGO_URI)
   .then(() => {
@@ -72,7 +72,7 @@ mongoose.connect(MONGO_URI)
     console.log('\x1b[32m$ integrity check ... OK\x1b[0m');
 
     app.listen(PORT, () => {
-      console.log(`\x1b[32m$ dossier.os server online // port ${PORT}\x1b[0m`);
+      console.log(`\x1b[32m$ threat_intelligence server online // port ${PORT}\x1b[0m`);
       console.log(`\x1b[32m$ access terminal at http://localhost:${PORT}\x1b[0m`);
     });
   })

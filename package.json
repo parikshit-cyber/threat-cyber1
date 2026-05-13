@@ -1,5 +1,5 @@
 {
-  "name": "dossier-os",
+  "name": "threat_intelligence",
   "version": "1.0.0",
   "description": "Evidence Vault - Classified Intelligence Dossier System",
   "main": "server.js",
