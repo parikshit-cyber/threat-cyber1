@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Dossier = require('../models/Dossier');
+const Threat = require('../models/Threat');
 const Evidence = require('../models/Evidence');
 
-// GET /api/dossiers - List all dossiers
+// GET /api/threats - List all threats
 router.get('/', async (req, res) => {
   try {
     const { search } = req.query;
@@ -18,29 +18,29 @@ router.get('/', async (req, res) => {
           { company: regex },
           { email: regex },
           { phone: regex },
-          { dossierId: regex }
+          { threatId: regex }
         ]
       };
     }
     
-    const dossiers = await Dossier.find(query).sort({ createdAt: -1 });
-    res.json({ success: true, dossiers });
+    const threats = await Threat.find(query).sort({ createdAt: -1 });
+    res.json({ success: true, threats });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// GET /api/dossiers/stats - Get global stats
+// GET /api/threats/stats - Get global stats
 router.get('/stats', async (req, res) => {
   try {
-    const dossierCount = await Dossier.countDocuments();
+    const threatCount = await Threat.countDocuments();
     const evidenceCount = await Evidence.countDocuments();
     const fileCount = await Evidence.countDocuments({ type: { $in: ['file', 'image'] } });
     
     res.json({
       success: true,
       stats: {
-        dossiers: dossierCount,
+        threats: threatCount,
         evidence: evidenceCount,
         files: fileCount
       }
@@ -50,59 +50,59 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// GET /api/dossiers/:id - Get single dossier
+// GET /api/threats/:id - Get single threat
 router.get('/:id', async (req, res) => {
   try {
-    const dossier = await Dossier.findById(req.params.id);
-    if (!dossier) {
-      return res.status(404).json({ success: false, message: 'DOSSIER NOT FOUND' });
+    const threat = await Threat.findById(req.params.id);
+    if (!threat) {
+      return res.status(404).json({ success: false, message: 'THREAT NOT FOUND' });
     }
-    res.json({ success: true, dossier });
+    res.json({ success: true, threat });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// POST /api/dossiers - Create new dossier
+// POST /api/threats - Create new threat
 router.post('/', async (req, res) => {
   try {
-    const dossier = new Dossier(req.body);
-    await dossier.save();
-    res.status(201).json({ success: true, dossier });
+    const threat = new Threat(req.body);
+    await threat.save();
+    res.status(201).json({ success: true, threat });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// PUT /api/dossiers/:id - Update dossier
+// PUT /api/threats/:id - Update threat
 router.put('/:id', async (req, res) => {
   try {
-    const dossier = await Dossier.findByIdAndUpdate(
+    const threat = await Threat.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
     );
-    if (!dossier) {
-      return res.status(404).json({ success: false, message: 'DOSSIER NOT FOUND' });
+    if (!threat) {
+      return res.status(404).json({ success: false, message: 'THREAT NOT FOUND' });
     }
-    res.json({ success: true, dossier });
+    res.json({ success: true, threat });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// DELETE /api/dossiers/:id - Delete dossier and all evidence
+// DELETE /api/threats/:id - Delete threat and all evidence
 router.delete('/:id', async (req, res) => {
   try {
-    const dossier = await Dossier.findById(req.params.id);
-    if (!dossier) {
-      return res.status(404).json({ success: false, message: 'DOSSIER NOT FOUND' });
+    const threat = await Threat.findById(req.params.id);
+    if (!threat) {
+      return res.status(404).json({ success: false, message: 'THREAT NOT FOUND' });
     }
     
     // Delete all associated evidence files from GridFS
     const mongoose = require('mongoose');
     const bucket = req.app.get('gridFSBucket');
-    const evidences = await Evidence.find({ dossierId: req.params.id });
+    const evidences = await Evidence.find({ threatId: req.params.id });
     
     for (const ev of evidences) {
       if (ev.gridfsFileId && bucket) {
@@ -112,10 +112,10 @@ router.delete('/:id', async (req, res) => {
       }
     }
     
-    await Evidence.deleteMany({ dossierId: req.params.id });
-    await Dossier.findByIdAndDelete(req.params.id);
+    await Evidence.deleteMany({ threatId: req.params.id });
+    await Threat.findByIdAndDelete(req.params.id);
     
-    res.json({ success: true, message: 'DOSSIER PURGED' });
+    res.json({ success: true, message: 'THREAT PURGED' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

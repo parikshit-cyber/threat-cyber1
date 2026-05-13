@@ -11,7 +11,7 @@
     <button class="back-btn" onclick="window.location.href='/dashboard'">← BACK</button>
     <div class="profile-actions">
       <button class="edit-btn" onclick="openEditModal()">✏ EDIT</button>
-      <button class="purge-btn" onclick="purgeDossier()">🗑 PURGE</button>
+      <button class="purge-btn" onclick="purgeThreat()">🗑 PURGE</button>
     </div>
   </div>
 
@@ -32,10 +32,10 @@
     </div>
   </div>
 
-  <!-- Edit Dossier Modal -->
+  <!-- Edit Threat Modal -->
   <div class="modal-overlay" id="editModal">
     <div class="modal">
-      <div class="modal-header"><h2>✏ EDIT DOSSIER</h2><button class="modal-close" onclick="closeEditModal()">&times;</button></div>
+      <div class="modal-header"><h2>✏ EDIT THREAT</h2><button class="modal-close" onclick="closeEditModal()">&times;</button></div>
       <div class="modal-body">
         <div class="form-group"><label class="form-label">FULL NAME *</label><input class="form-input" id="eName"></div>
         <div class="form-row">

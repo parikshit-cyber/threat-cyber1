@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const mongoose = require('mongoose');
 const Evidence = require('../models/Evidence');
-const Dossier = require('../models/Dossier');
+const Threat = require('../models/Threat');
 
 // Use memory storage — file buffer goes to GridFS, NOT disk
 const upload = multer({
@@ -35,10 +35,10 @@ async function deleteFromGridFS(bucket, fileId) {
   } catch (e) { /* file may not exist */ }
 }
 
-// GET /api/evidence/dossier/:dossierId - List evidence for a dossier
-router.get('/dossier/:dossierId', async (req, res) => {
+// GET /api/evidence/threat/:threatId - List evidence for a threat
+router.get('/threat/:threatId', async (req, res) => {
   try {
-    const evidence = await Evidence.find({ dossierId: req.params.dossierId })
+    const evidence = await Evidence.find({ threatId: req.params.threatId })
       .sort({ createdAt: -1 });
     res.json({ success: true, evidence });
   } catch (err) {
@@ -49,10 +49,10 @@ router.get('/dossier/:dossierId', async (req, res) => {
 // POST /api/evidence/note - Add a note
 router.post('/note', async (req, res) => {
   try {
-    const { dossierId, title, content } = req.body;
+    const { threatId, title, content } = req.body;
     
     const evidence = new Evidence({
-      dossierId,
+      threatId,
       type: 'note',
       title: title || 'Untitled Note',
       content
@@ -60,8 +60,8 @@ router.post('/note', async (req, res) => {
     
     await evidence.save();
     
-    const count = await Evidence.countDocuments({ dossierId });
-    await Dossier.findByIdAndUpdate(dossierId, { evidenceCount: count });
+    const count = await Evidence.countDocuments({ threatId });
+    await Threat.findByIdAndUpdate(threatId, { evidenceCount: count });
     
     res.status(201).json({ success: true, evidence });
   } catch (err) {
@@ -72,10 +72,10 @@ router.post('/note', async (req, res) => {
 // POST /api/evidence/report - Add a report
 router.post('/report', async (req, res) => {
   try {
-    const { dossierId, title, content } = req.body;
+    const { threatId, title, content } = req.body;
     
     const evidence = new Evidence({
-      dossierId,
+      threatId,
       type: 'report',
       title: title || 'Untitled Report',
       content
@@ -83,8 +83,8 @@ router.post('/report', async (req, res) => {
     
     await evidence.save();
     
-    const count = await Evidence.countDocuments({ dossierId });
-    await Dossier.findByIdAndUpdate(dossierId, { evidenceCount: count });
+    const count = await Evidence.countDocuments({ threatId });
+    await Threat.findByIdAndUpdate(threatId, { evidenceCount: count });
     
     res.status(201).json({ success: true, evidence });
   } catch (err) {
@@ -105,7 +105,7 @@ router.post('/image', upload.single('file'), async (req, res) => {
     );
     
     const evidence = new Evidence({
-      dossierId: req.body.dossierId,
+      threatId: req.body.threatId,
       type: 'image',
       title: req.body.title || req.file.originalname,
       fileName: req.file.originalname,
@@ -117,8 +117,8 @@ router.post('/image', upload.single('file'), async (req, res) => {
     
     await evidence.save();
     
-    const count = await Evidence.countDocuments({ dossierId: req.body.dossierId });
-    await Dossier.findByIdAndUpdate(req.body.dossierId, { evidenceCount: count });
+    const count = await Evidence.countDocuments({ threatId: req.body.threatId });
+    await Threat.findByIdAndUpdate(req.body.threatId, { evidenceCount: count });
     
     res.status(201).json({ success: true, evidence });
   } catch (err) {
@@ -139,7 +139,7 @@ router.post('/file', upload.single('file'), async (req, res) => {
     );
     
     const evidence = new Evidence({
-      dossierId: req.body.dossierId,
+      threatId: req.body.threatId,
       type: 'file',
       title: req.body.title || req.file.originalname,
       fileName: req.file.originalname,
@@ -151,8 +151,8 @@ router.post('/file', upload.single('file'), async (req, res) => {
     
     await evidence.save();
     
-    const count = await Evidence.countDocuments({ dossierId: req.body.dossierId });
-    await Dossier.findByIdAndUpdate(req.body.dossierId, { evidenceCount: count });
+    const count = await Evidence.countDocuments({ threatId: req.body.threatId });
+    await Threat.findByIdAndUpdate(req.body.threatId, { evidenceCount: count });
     
     res.status(201).json({ success: true, evidence });
   } catch (err) {
@@ -196,17 +196,17 @@ async function streamGridFSFile(req, res, evidenceId, disposition) {
   }
 }
 
-// GET /api/evidence/:id/download - Download evidence file
+// GET /api/evidence/:id/download
 router.get('/:id/download', (req, res) => {
   streamGridFSFile(req, res, req.params.id, 'attachment');
 });
 
-// GET /api/evidence/:id/view - View/preview evidence file inline
+// GET /api/evidence/:id/view
 router.get('/:id/view', (req, res) => {
   streamGridFSFile(req, res, req.params.id, 'inline');
 });
 
-// DELETE /api/evidence/:id - Delete evidence
+// DELETE /api/evidence/:id
 router.delete('/:id', async (req, res) => {
   try {
     const evidence = await Evidence.findById(req.params.id);
@@ -214,17 +214,16 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: 'EVIDENCE NOT FOUND' });
     }
     
-    // Delete from GridFS
     if (evidence.gridfsFileId) {
       const bucket = getBucket(req);
       await deleteFromGridFS(bucket, evidence.gridfsFileId);
     }
     
-    const dossierId = evidence.dossierId;
+    const threatId = evidence.threatId;
     await Evidence.findByIdAndDelete(req.params.id);
     
-    const count = await Evidence.countDocuments({ dossierId });
-    await Dossier.findByIdAndUpdate(dossierId, { evidenceCount: count });
+    const count = await Evidence.countDocuments({ threatId });
+    await Threat.findByIdAndUpdate(threatId, { evidenceCount: count });
     
     res.json({ success: true, message: 'EVIDENCE PURGED' });
   } catch (err) {
@@ -232,7 +231,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// GET /api/evidence/:id - Get single evidence
+// GET /api/evidence/:id
 router.get('/:id', async (req, res) => {
   try {
     const evidence = await Evidence.findById(req.params.id);
@@ -245,7 +244,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// PUT /api/evidence/:id - Update evidence (notes/reports)
+// PUT /api/evidence/:id
 router.put('/:id', async (req, res) => {
   try {
     const evidence = await Evidence.findByIdAndUpdate(

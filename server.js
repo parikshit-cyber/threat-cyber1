@@ -3,14 +3,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const path = require('path');
 
 const authRoutes = require('./routes/auth');
-const dossierRoutes = require('./routes/dossiers');
+const threatRoutes = require('./routes/threats');
 const evidenceRoutes = require('./routes/evidence');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/threat_intelligence';
 
 // Middleware
 app.use(cors());
@@ -20,14 +22,20 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Trust proxy for Render (needed for secure cookies behind reverse proxy)
 app.set('trust proxy', 1);
 
+// Persistent Session Store using MongoDB
 app.use(session({
   secret: process.env.SESSION_SECRET || 'classified-vault-secret',
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: MONGO_URI,
+    collectionName: 'sessions',
+    ttl: 24 * 60 * 60 // 1 day
+  }),
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    secure: false,
-    sameSite: 'lax'
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   }
 }));
 
@@ -36,7 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/dossiers', dossierRoutes);
+app.use('/api/threats', threatRoutes);
 app.use('/api/evidence', evidenceRoutes);
 
 // Serve pages
@@ -58,7 +66,10 @@ app.get('/health', (req, res) => {
 });
 
 // Connect to MongoDB & start server
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/threat_intelligence';
+console.log('$ initializing vault connection ...');
+if (!process.env.MONGODB_URI && process.env.NODE_ENV === 'production') {
+  console.warn('\x1b[33m$ WARNING: MONGODB_URI not found in environment. Deployment may fail.\x1b[0m');
+}
 
 mongoose.connect(MONGO_URI)
   .then(() => {
@@ -73,10 +84,13 @@ mongoose.connect(MONGO_URI)
 
     app.listen(PORT, () => {
       console.log(`\x1b[32m$ threat_intelligence server online // port ${PORT}\x1b[0m`);
-      console.log(`\x1b[32m$ access terminal at http://localhost:${PORT}\x1b[0m`);
     });
   })
   .catch(err => {
-    console.error('\x1b[31m$ CRITICAL: vault connection failed\x1b[0m', err.message);
+    console.error('\x1b[31m$ CRITICAL: vault connection failed\x1b[0m');
+    console.error('\x1b[31m$ ERROR_DETAILS:\x1b[0m', err.message);
+    if (err.message.includes('ECONNREFUSED')) {
+      console.error('\x1b[33m$ HINT: Ensure MONGODB_URI is set correctly in Render environment variables.\x1b[0m');
+    }
     process.exit(1);
   });

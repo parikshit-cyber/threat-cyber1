@@ -1,19 +1,19 @@
-let dossierId, dossierData, selectedFile;
+let threatId, threatData, selectedFile;
 document.addEventListener('DOMContentLoaded', () => {
   const parts = window.location.pathname.split('/');
-  dossierId = parts[parts.length - 1];
-  if (!dossierId) return window.location.href = '/dashboard';
+  threatId = parts[parts.length - 1];
+  if (!threatId) return window.location.href = '/dashboard';
   loadProfile();
   loadEvidence();
 });
 
 async function loadProfile() {
   try {
-    const res = await fetch(`/api/dossiers/${dossierId}`);
+    const res = await fetch(`/api/threats/${threatId}`);
     const data = await res.json();
     if (!data.success) return window.location.href = '/dashboard';
-    dossierData = data.dossier;
-    renderSidebar(dossierData);
+    threatData = data.threat;
+    renderSidebar(threatData);
   } catch (e) { console.error(e); }
 }
 
@@ -23,7 +23,7 @@ function renderSidebar(d) {
     <div class="profile-avatar-section">
       <div class="profile-avatar-large">👤</div>
       <div class="profile-avatar-info">
-        <div class="dossier-tag">DOSSIER ${d.dossierId}</div>
+        <div class="threat-tag">THREAT ${d.threatId}</div>
         <div class="profile-name">${d.fullName.toUpperCase()}</div>
       </div>
     </div>
@@ -36,7 +36,7 @@ function renderSidebar(d) {
 
 async function loadEvidence() {
   try {
-    const res = await fetch(`/api/evidence/dossier/${dossierId}`);
+    const res = await fetch(`/api/evidence/threat/${threatId}`);
     const data = await res.json();
     const list = document.getElementById('evidenceList');
     document.getElementById('evidenceCount').textContent = data.evidence?.length || 0;
@@ -104,7 +104,6 @@ function viewFile(evidenceId, fileName, mimeType) {
   document.getElementById('viewModalTitle').textContent = fileName || 'FILE PREVIEW';
   const viewUrl = `/api/evidence/${evidenceId}/view`;
 
-  // PDF or viewable types get an iframe preview
   if (mimeType === 'application/pdf' || (mimeType && mimeType.startsWith('text/'))) {
     document.getElementById('viewContent').innerHTML = `
       <iframe src="${viewUrl}" style="width:100%;height:70vh;border:1px solid var(--border);background:#111;" title="File preview"></iframe>
@@ -131,7 +130,6 @@ function viewFile(evidenceId, fileName, mimeType) {
         <button class="download-btn" onclick="downloadFile('${evidenceId}')" style="display:inline-flex;">⬇ DOWNLOAD</button>
       </div>`;
   } else {
-    // Unsupported preview — show info + download
     document.getElementById('viewContent').innerHTML = `
       <div style="padding:40px;text-align:center;">
         <div style="font-size:48px;margin-bottom:12px;">📦</div>
@@ -151,8 +149,8 @@ function formatSize(bytes) {
 }
 
 function openEditModal() {
-  if (!dossierData) return;
-  const d = dossierData;
+  if (!threatData) return;
+  const d = threatData;
   document.getElementById('eName').value = d.fullName || '';
   document.getElementById('eAlias').value = d.alias || '';
   document.getElementById('eCompany').value = d.company || '';
@@ -182,17 +180,17 @@ async function saveEdit() {
     familyInfo: document.getElementById('eFamily').value.trim(), generalNotes: document.getElementById('eNotes').value.trim()
   };
   try {
-    const res = await fetch(`/api/dossiers/${dossierId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    const res = await fetch(`/api/threats/${threatId}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
     const data = await res.json();
-    if (data.success) { closeEditModal(); showToast('✓ DOSSIER UPDATED'); loadProfile(); }
+    if (data.success) { closeEditModal(); showToast('✓ THREAT UPDATED'); loadProfile(); }
     else showToast('// ERROR', true);
   } catch (e) { showToast('// CONNECTION FAILURE', true); }
 }
 
-async function purgeDossier() {
-  if (!confirm('PURGE THIS DOSSIER?\n\nAll evidence will be permanently destroyed.')) return;
+async function purgeThreat() {
+  if (!confirm('PURGE THIS THREAT?\n\nAll evidence will be permanently destroyed.')) return;
   try {
-    const res = await fetch(`/api/dossiers/${dossierId}`, { method:'DELETE' });
+    const res = await fetch(`/api/threats/${threatId}`, { method:'DELETE' });
     const data = await res.json();
     if (data.success) window.location.href = '/dashboard';
     else showToast('// ERROR', true);
@@ -245,7 +243,7 @@ async function saveEvidence() {
     try {
       const res = await fetch(`/api/evidence/${type}`, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ dossierId, title: title || `Untitled ${type}`, content })
+        body: JSON.stringify({ threatId, title: title || `Untitled ${type}`, content })
       });
       const data = await res.json();
       if (data.success) { closeEvidenceModal(); showToast('✓ ' + type.toUpperCase() + ' ADDED'); loadEvidence(); }
@@ -255,7 +253,7 @@ async function saveEvidence() {
     if (!selectedFile) { showToast('// NO FILE SELECTED', true); return; }
     const formData = new FormData();
     formData.append('file', selectedFile);
-    formData.append('dossierId', dossierId);
+    formData.append('threatId', threatId);
     formData.append('title', title || selectedFile.name);
     try {
       const res = await fetch(`/api/evidence/${type}`, { method:'POST', body: formData });

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-const dossierSchema = new mongoose.Schema({
-  dossierId: {
+const threatSchema = new mongoose.Schema({
+  threatId: {
     type: String,
     unique: true,
     default: () => '#' + Math.random().toString(16).substr(2, 6).toUpperCase()
@@ -73,4 +73,4 @@ const dossierSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('Dossier', dossierSchema);
+module.exports = mongoose.model('Threat', threatSchema);

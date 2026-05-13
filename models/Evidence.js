@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const evidenceSchema = new mongoose.Schema({
-  dossierId: {
+  threatId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Dossier',
+    ref: 'Threat',
     required: true
   },
   type: {
@@ -36,12 +36,10 @@ const evidenceSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  // Legacy field kept for backward compat with local dev
   filePath: {
     type: String,
     default: ''
   },
-  // GridFS file ID for cloud storage
   gridfsFileId: {
     type: mongoose.Schema.Types.ObjectId,
     default: null

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>THREAT INTELLIGENCE // ACTIVE DOSSIERS</title>
+  <title>THREAT INTELLIGENCE // ACTIVE THREATS</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="nav-stats">
-      <span class="nav-stat">DOSSIERS<span class="count" id="statDossiers">0</span></span>
+      <span class="nav-stat">THREATS<span class="count" id="statThreats">0</span></span>
       <span class="nav-stat">EVIDENCE<span class="count" id="statEvidence">0</span></span>
       <span class="nav-stat">FILES<span class="count" id="statFiles">0</span></span>
     </div>
@@ -25,7 +25,7 @@
 
   <div class="dashboard-container">
     <div class="section-prefix">> VAULT.LIST_ALL()</div>
-    <h2 class="section-title">ACTIVE <span class="accent">DOSSIERS</span></h2>
+    <h2 class="section-title">ACTIVE <span class="accent">THREATS</span></h2>
     <p class="section-desc">Persons of interest with associated evidence, notes, files and intel reports.</p>
 
     <div class="top-bar">
@@ -33,21 +33,21 @@
         <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" placeholder="search by name, alias, company, contact ..." oninput="debounceSearch()">
       </div>
-      <button class="new-dossier-btn" onclick="openNewDossierModal()">+ NEW DOSSIER</button>
+      <button class="new-threat-btn" onclick="openNewThreatModal()">+ NEW THREAT</button>
     </div>
 
-    <div class="dossier-grid" id="dossierGrid"></div>
+    <div class="threat-grid" id="threatGrid"></div>
   </div>
 
-  <!-- New/Edit Dossier Modal -->
-  <div class="modal-overlay" id="dossierModal">
+  <!-- New/Edit Threat Modal -->
+  <div class="modal-overlay" id="threatModal">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modalTitle">+ NEW DOSSIER</h2>
+        <h2 id="modalTitle">+ NEW THREAT</h2>
         <button class="modal-close" onclick="closeModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <input type="hidden" id="editDossierId">
+        <input type="hidden" id="editThreatId">
         <div class="form-group">
           <label class="form-label">FULL NAME *</label>
           <input class="form-input" id="fFullName" placeholder="John Doe" required>
@@ -72,7 +72,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeModal()">CANCEL</button>
-        <button class="btn-save" onclick="saveDossier()">SAVE DOSSIER</button>
+        <button class="btn-save" onclick="saveThreat()">SAVE THREAT</button>
       </div>
     </div>
   </div>
